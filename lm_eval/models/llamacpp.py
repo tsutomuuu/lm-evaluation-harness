@@ -51,39 +51,6 @@ logger = logging.getLogger(__name__)
 #=====================================================================#
 #=====================================================================#
 
-#-------------------------------------#
-
-def get_result(
-        logprobs:Dict[str,Any],
-        context_length:int
-        ) -> Tuple[float, bool]:
-
-    """
-    logprobsの情報から、context 長さ以降の継続部分の log probabilityと greedy 生成か否かの判定結果を返します。
-    """
-    is_greedy: bool = True
-    offsets: List[int] = logprobs["text_offset"]
-    tokens: List[str] = logprobs["tokens"]
-    tokens_logprobs: List[float] = logprobs["token_logprobs"]
-
-    idx: int = 0
-    while idx < len(offsets) and offsets[idx] < context_length:
-        idx += 1
-    continuation_logprobs: float = sum(tokens_logprobs[idx:-1])
-    for i in range(idx, len(tokens)):
-        token: str = tokens[i]
-        top_tokens: Dict[str, float] = logprobs["top_logprobs"][i]
-        top_token: str = max(top_tokens.keys(), key=lambda x: top_tokens[x])
-        if top_token != token:
-            is_greedy = False
-            break
-
-    return continuation_logprobs, is_greedy
-#-------------------------------------#
-
-#=====================================================================#
-#=====================================================================#
-
 @register_model("llama-cpp", "llamacpp")
 class LlamaCppLM(LM):
 
@@ -216,7 +183,7 @@ class LlamaCppLM(LM):
                 ]
             )
             if result.returncode == 0 :
-                print (f'Success in converting ! : {path_to_gguf_tmp}')
+                print (f'Success in converting !  : {path_to_gguf_tmp}')
                 print (f'result.stdout: {result.stdout}')
             else :
                 print ('Failure in converting ...')

@@ -12,6 +12,7 @@ from . import (
     nemo_lm,
     neuralmagic,
     neuron_optimum,
+    llamacpp,
     openai_completions,
     optimum_ipex,
     optimum_lm,
